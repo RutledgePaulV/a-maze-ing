@@ -63,11 +63,11 @@ class RectangularGenerator(width: Int = 20, height: Int = 20) extends Generator[
 			panel.draw(new Line2D.Double(topLeft, topRight))
 		}
 
-		if (point.right(vertex, width)) {
+		if (point.right(vertex, width - 1)) {
 			panel.draw(new Line2D.Double(topRight, bottomRight))
 		}
 
-		if (point.bottom(vertex, height)) {
+		if (point.bottom(vertex, height - 1)) {
 			panel.draw(new Line2D.Double(bottomRight, bottomLeft))
 		}
 	}
