@@ -1,61 +1,128 @@
 package graph
+
 import scala.collection.mutable
 import scala.language.implicitConversions
 
 class Graph[A, B] {
 
-  private case class Pair(x:Vertex, y:Vertex)
-  private val _vertices = mutable.Set[Vertex]()
-  private val adjacencies:mutable.Map[Pair, Edge] = mutable.Map.empty
+	private case class Pair(x: Vertex[A, B], y: Vertex[A, B])
 
-  def vertices = _vertices
-  def edges = adjacencies.values.toSet
+	private val adjacencies: mutable.Map[Pair, Edge[A, B]] = mutable.Map.empty
+	private val _vertices = mutable.Set[Vertex[A, B]]()
+	private var label = 0
 
-  case class Vertex(var data: Option[A]) {
-    def remove() = removeVertex(this)
-    lazy val edges = getEdges(this)
-    lazy val neighbors = edges.map(_.other(this))
-  }
+	//------------------------------------------------------------------------------------------
+	// Methods for CRUD on vertices
+	//------------------------------------------------------------------------------------------
 
-  case class Edge(node1: Vertex, node2:Vertex,var data:Option[B]) {
-    def remove() = removeEdge(this)
-    val vertices = Set(node1, node2)
-    def other(vertex: Vertex) = vertex match {
-      case `node1` => node2
-      case `node2` => node1
-    }
-  }
+	def vertices = _vertices.toSet
 
-  def vertex(data: A): Vertex = {
-    val vertex = new Vertex(Some(data))
-    vertices += vertex
-    return vertex
-  }
+	def vertex(): Vertex[A, B] = {
+		val vertex = new Vertex(None, this)
+		_vertices += vertex
+		return vertex
+	}
 
-  def getVertex(pred: Vertex => Boolean): Option[Vertex] = vertices.find(pred)
+	def vertex(data: A): Vertex[A, B] = {
+		val vertex = new Vertex(Some(data), this)
+		_vertices += vertex
+		return vertex
+	}
 
-  def edge(vertex1: Vertex, vertex2: Vertex) : Edge = {
-    val edge = Edge(vertex1, vertex2, None)
-    adjacencies += edgeToPair(edge) -> edge
-    return edge
-  }
+	def getVertex(pred: Vertex[A, B] => Boolean): Option[Vertex[A, B]] = _vertices.find(pred)
 
-  def getEdge(pred: Edge => Boolean): Option[Edge] = adjacencies.values.find(pred)
 
-  private def getEdges(vertex: Vertex): Set[Edge] = {
-    adjacencies.filterKeys {
-      case Pair(`vertex`, _) => true
-      case Pair(_, `vertex`) => true
-      case _ => false
-    }.values.toSet
-  }
+	//------------------------------------------------------------------------------------------
+	// Methods for CRUD on edges
+	//------------------------------------------------------------------------------------------
 
-  private def removeVertex(vertex: Vertex) = {
-    getEdges(vertex).foreach(removeEdge)
-    vertices.remove(vertex)
-  }
+	def edges = adjacencies.values.toSet
 
-  private def removeEdge(edge: Edge) = adjacencies.remove(edge)
-  private implicit def edgeToPair(edge:Edge): Pair = Pair(edge.node1, edge.node2)
+	def edge(vertex1: Vertex[A, B], vertex2: Vertex[A, B], data: B): Edge[A, B] = {
+		val edge = Edge(vertex1, vertex2, Some(data), this)
+		adjacencies += edgeToPair(edge) -> edge
+		return edge
+	}
+
+	def edge(vertex1: Vertex[A, B], vertex2: Vertex[A, B]): Edge[A, B] = {
+		val edge = Edge(vertex1, vertex2, None, this)
+		adjacencies += edgeToPair(edge) -> edge
+		return edge
+	}
+
+	def getEdge(pred: Edge[A, B] => Boolean): Option[Edge[A, B]] = adjacencies.values.find(pred)
+
+
+	//------------------------------------------------------------------------------------------
+	// Methods for traversal on the graph
+	//------------------------------------------------------------------------------------------
+
+
+	//------------------------------------------------------------------------------------------
+	// Utility methods
+	//------------------------------------------------------------------------------------------
+	private[graph] def nextLabel(): Int = {
+		label += 1
+		return label
+	}
+
+	//------------------------------------------------------------------------------------------
+	// Some private methods that will be used by the edge and vertex case classes for convenient methods
+	//------------------------------------------------------------------------------------------
+
+	private[graph] def getEdges(vertex: Vertex[A, B]): Set[Edge[A, B]] = {
+		adjacencies.filterKeys {
+			case Pair(`vertex`, _) => true
+			case Pair(_, `vertex`) => true
+			case _ => false
+		}.values.toSet
+	}
+
+	private[graph] def removeVertex(vertex: Vertex[A, B]) = {
+		getEdges(vertex).foreach(removeEdge)
+		_vertices.remove(vertex)
+	}
+
+	private[graph] def removeEdge(edge: Edge[A, B]) = adjacencies.remove(edge)
+
+	private implicit def edgeToPair(edge: Edge[A, B]): Pair = Pair(edge.node1, edge.node2)
 
 }
+
+
+/**
+ * An edge represents a single relationship between two vertices.
+ *
+ */
+case class Edge[A, B](node1: Vertex[A, B],
+                      node2: Vertex[A, B],
+                      var data: Option[B],
+                      implicit protected val graph: Graph[A, B]) {
+
+	def remove() = graph.removeEdge(this)
+
+	def vertices = Set(node1, node2)
+
+	def other(vertex: Vertex[A, B]): Vertex[A, B] = {
+		if (vertex == node1)
+			node2
+		else
+			node1
+	}
+
+}
+
+
+case class Vertex[A, B](var data: Option[A],
+                        implicit protected val graph: Graph[A, B]) {
+
+	val label = graph.nextLabel()
+
+	def remove() = graph.removeVertex(this)
+
+	def edges = graph.getEdges(this)
+
+	def neighbors = graph.edges.map(_.other(this))
+
+}
+
