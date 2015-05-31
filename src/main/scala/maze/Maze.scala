@@ -9,6 +9,15 @@ import scala.util.Random
 
 class Maze(graph: Graph[Point, Boundary]) {
 
+	private class RandomSet[A](set: Set[A]) {
+		private val rnd = new Random()
+
+		def random() = if (set.nonEmpty) Some(set.toVector(rnd.nextInt(set.size))) else None
+	}
+
+	private implicit def setToRandomSet[A](set: Set[A]): RandomSet[A] = new RandomSet(set)
+
+
 	def prim() = {
 
 		val stack = new mutable.Stack[Vertex[Point, Boundary]]
@@ -17,7 +26,7 @@ class Maze(graph: Graph[Point, Boundary]) {
 
 		while (!graph.vertices.forall(_.data.get.visited)) {
 
-			val edgeToRemove = current.edges.filter(_.other(current).data.get.visited).random()
+			val edgeToRemove = current.edges.filter(!_.other(current).data.get.visited).random()
 
 			if (edgeToRemove.isEmpty && stack.nonEmpty) {
 
@@ -38,14 +47,6 @@ class Maze(graph: Graph[Point, Boundary]) {
 
 		}
 
-	}
-
-	private implicit def setToRandomSet[A](set: Set[A]): RandomSet[A] = new RandomSet(set)
-
-	private class RandomSet[A](set: Set[A]) {
-		private val rnd = new Random()
-
-		def random() = if (set.nonEmpty) Some(set.toVector(rnd.nextInt(set.size))) else None
 	}
 
 }
