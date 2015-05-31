@@ -7,22 +7,19 @@ import scala.language.implicitConversions
 import scala.util.Random
 
 
-class Maze(graph: Graph[Point, Boundary]) {
+object PrimsLabyrinth {
 
 	private class RandomSet[A](set: Set[A]) {
 		private val rnd = new Random()
-
 		def random() = if (set.nonEmpty) Some(set.toVector(rnd.nextInt(set.size))) else None
 	}
 
 	private implicit def setToRandomSet[A](set: Set[A]): RandomSet[A] = new RandomSet(set)
 
+	def finagle[A <: Visitable](graph: Graph[A, Boundary], pred:Vertex[A,Boundary] => Boolean): Graph[A, Boundary] = {
 
-	def prim() = {
-
-		val stack = new mutable.Stack[Vertex[Point, Boundary]]
-		var current = graph.getVertex(v => v.data.get.x == 0 && v.data.get.y == 0).get
-
+		val stack = new mutable.Stack[Vertex[A, Boundary]]
+		var current = graph.getVertex(pred).get
 
 		while (!graph.vertices.forall(_.data.get.visited)) {
 
@@ -42,11 +39,13 @@ class Maze(graph: Graph[Point, Boundary]) {
 				if (!edgeToRemove.get.data.get.isOuterEdge) {
 					edgeToRemove.get.remove()
 				}
-
 			}
 
 		}
 
+		return graph
 	}
+
+
 
 }

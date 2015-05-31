@@ -1,13 +1,65 @@
 import generators.RectangularGenerator
+import graph.{Graph, Vertex}
+import maze.{Boundary, Point, PrimsLabyrinth}
 
 object Initializer extends App {
 
-	val gen = new RectangularGenerator()
+	override def main (args: Array[String]) {
+		var arguments = args
 
-	val maze = gen.generate()
+		if(arguments.isEmpty) {
+			arguments = Array("rectangular")
+		}
 
-	maze.prim()
+		arguments.foreach {
+			case "rectangular" => rectangular()
+			case "circular" => circular()
+			case "spherical" => spherical()
+			case _ => print("You must select one or more options from: rectangular, circular, or spherical.")
+		}
+	}
 
-	print(maze)
+
+	/**
+	 * The simplest of the three, this just creates rectangular grid as a graph.
+	 * The left, top, right, and bottom are considered outer walls and therefore are left intact.
+	 *
+	 * Renders as ascii art.
+	 */
+	def rectangular(): Unit = {
+		val generator = new RectangularGenerator(100, 100)
+
+		val mazeGraph: Graph[Point, Boundary] = generator.generate()
+
+		def getStartingNode(vertex: Vertex[Point, Boundary]): Boolean = {
+			vertex.data.get.x == 0 && vertex.data.get.y == 0
+		}
+
+		val reduced = PrimsLabyrinth.finagle(mazeGraph, getStartingNode)
+
+		generator.render(reduced)
+	}
+
+	/**
+	 * Still in 2D, but this one places nodes on various radii of a circle and uses arcs and lines connecting
+	 * neighboring radii as the edges. Only the outermost circumference is considered the outer wall of the maze.
+	 *
+	 * Renders as a 2D canvas drawing.
+	 */
+	def circular(): Unit = {
+		// TODO
+	}
+
+	/**
+	 * The most advanced representation is in 3D. The nodes lie on spheres of various radii with the outermost
+	 * sphere representing the outer walls of the maze. Edges exist along a longitudinal and latitudinal grid on
+	 * each sphere as well edges between the nodes who share the same plane slope but on neighboring spheres
+	 * (neighbors meaning one step along the radii step-function)
+	 *
+	 * Renders as 3D canvas drawing.
+	 */
+	def spherical(): Unit = {
+		// TODO
+	}
 
 }

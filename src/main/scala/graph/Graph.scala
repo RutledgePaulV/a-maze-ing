@@ -48,9 +48,11 @@ class Graph[A, B] {
 		return edge
 	}
 
-	private implicit def edgeToPair(edge: Edge[A, B]): Pair = Pair(edge.node1, edge.node2)
-
 	def getEdge(pred: Edge[A, B] => Boolean): Option[Edge[A, B]] = adjacencies.values.find(pred)
+
+	def edgesBetween(vertex1: Vertex[A, B], vertex2: Vertex[A, B]): Set[Edge[A, B]] = vertex1.edges intersect vertex2.edges
+
+	private implicit def edgeToPair(edge: Edge[A, B]): Pair = Pair(edge.node1, edge.node2)
 
 
 	//------------------------------------------------------------------------------------------
