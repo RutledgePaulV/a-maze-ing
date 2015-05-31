@@ -19,6 +19,7 @@ class Graph[A, B] {
 
   case class Edge(node1: Vertex, node2:Vertex,var data:Option[B]) {
     def remove() = removeEdge(this)
+    val vertices = Set(node1, node2)
     def other(vertex: Vertex) = vertex match {
       case `node1` => node2
       case `node2` => node1
@@ -31,11 +32,15 @@ class Graph[A, B] {
     return vertex
   }
 
+  def getVertex(pred: Vertex => Boolean): Option[Vertex] = vertices.find(pred)
+
   def edge(vertex1: Vertex, vertex2: Vertex) : Edge = {
     val edge = Edge(vertex1, vertex2, None)
     adjacencies += edgeToPair(edge) -> edge
     return edge
   }
+
+  def getEdge(pred: Edge => Boolean): Option[Edge] = adjacencies.values.find(pred)
 
   private def getEdges(vertex: Vertex): Set[Edge] = {
     adjacencies.filterKeys {
@@ -50,12 +55,7 @@ class Graph[A, B] {
     vertices.remove(vertex)
   }
 
-  private def removeEdge(edge: Edge) = {
-    adjacencies.remove(edge)
-  }
-
-  private implicit def edgeToPair(edge:Edge): Pair = {
-    Pair(edge.node1, edge.node2)
-  }
+  private def removeEdge(edge: Edge) = adjacencies.remove(edge)
+  private implicit def edgeToPair(edge:Edge): Pair = Pair(edge.node1, edge.node2)
 
 }
