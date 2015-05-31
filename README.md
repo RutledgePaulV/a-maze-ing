@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/RutledgePaulV/a-maze-ing.svg)](https://travis-ci.org/RutledgePaulV/a-maze-ing)
+
 ##a-maze-ing
 This project is an implementation of prim's algorithm applied to maze generation. It uses a generic graph
 structure along with two custom types (one for the data associated with vertices and one for the data 
