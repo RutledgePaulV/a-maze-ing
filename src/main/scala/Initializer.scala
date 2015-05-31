@@ -1,13 +1,13 @@
 import generators.RectangularGenerator
 
-object Initializer extends App{
+object Initializer extends App {
 
-  val gen = new RectangularGenerator()
+	val gen = new RectangularGenerator()
 
-  val maze = gen.generate()
+	val maze = gen.generate()
 
-  maze.prim()
+	maze.prim()
 
-  print(maze)
+	print(maze)
 
 }

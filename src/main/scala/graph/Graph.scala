@@ -5,17 +5,15 @@ import scala.language.implicitConversions
 
 class Graph[A, B] {
 
-	private case class Pair(x: Vertex[A, B], y: Vertex[A, B])
-
 	private val adjacencies: mutable.Map[Pair, Edge[A, B]] = mutable.Map.empty
 	private val _vertices = mutable.Set[Vertex[A, B]]()
 	private var label = 0
 
+	def vertices = _vertices.toSet
+
 	//------------------------------------------------------------------------------------------
 	// Methods for CRUD on vertices
 	//------------------------------------------------------------------------------------------
-
-	def vertices = _vertices.toSet
 
 	def vertex(): Vertex[A, B] = {
 		val vertex = new Vertex(None, this)
@@ -31,12 +29,12 @@ class Graph[A, B] {
 
 	def getVertex(pred: Vertex[A, B] => Boolean): Option[Vertex[A, B]] = _vertices.find(pred)
 
+	def edges = adjacencies.values.toSet
+
 
 	//------------------------------------------------------------------------------------------
 	// Methods for CRUD on edges
 	//------------------------------------------------------------------------------------------
-
-	def edges = adjacencies.values.toSet
 
 	def edge(vertex1: Vertex[A, B], vertex2: Vertex[A, B], data: B): Edge[A, B] = {
 		val edge = Edge(vertex1, vertex2, Some(data), this)
@@ -49,6 +47,8 @@ class Graph[A, B] {
 		adjacencies += edgeToPair(edge) -> edge
 		return edge
 	}
+
+	private implicit def edgeToPair(edge: Edge[A, B]): Pair = Pair(edge.node1, edge.node2)
 
 	def getEdge(pred: Edge[A, B] => Boolean): Option[Edge[A, B]] = adjacencies.values.find(pred)
 
@@ -70,6 +70,11 @@ class Graph[A, B] {
 	// Some private methods that will be used by the edge and vertex case classes for convenient methods
 	//------------------------------------------------------------------------------------------
 
+	private[graph] def removeVertex(vertex: Vertex[A, B]) = {
+		getEdges(vertex).foreach(removeEdge)
+		_vertices.remove(vertex)
+	}
+
 	private[graph] def getEdges(vertex: Vertex[A, B]): Set[Edge[A, B]] = {
 		adjacencies.filterKeys {
 			case Pair(`vertex`, _) => true
@@ -78,14 +83,9 @@ class Graph[A, B] {
 		}.values.toSet
 	}
 
-	private[graph] def removeVertex(vertex: Vertex[A, B]) = {
-		getEdges(vertex).foreach(removeEdge)
-		_vertices.remove(vertex)
-	}
-
 	private[graph] def removeEdge(edge: Edge[A, B]) = adjacencies.remove(edge)
 
-	private implicit def edgeToPair(edge: Edge[A, B]): Pair = Pair(edge.node1, edge.node2)
+	private case class Pair(x: Vertex[A, B], y: Vertex[A, B])
 
 }
 
