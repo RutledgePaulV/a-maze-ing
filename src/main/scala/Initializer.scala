@@ -1,6 +1,6 @@
 import generators.RectangularGenerator
 import graph.{Graph, Vertex}
-import maze.{Boundary, Point, PrimsLabyrinth}
+import maze.{Point, PrimsLabyrinth}
 
 object Initializer extends App {
 
@@ -27,11 +27,11 @@ object Initializer extends App {
 	 * Renders as ascii art.
 	 */
 	def rectangular(): Unit = {
-		val generator = new RectangularGenerator(10, 10)
+		val generator = new RectangularGenerator(100, 100)
 
-		val mazeGraph: Graph[Point, Boundary] = generator.generate()
+		val mazeGraph: Graph[Point, Boolean] = generator.generate()
 
-		def getStartingNode(vertex: Vertex[Point, Boundary]): Boolean = {
+		def getStartingNode(vertex: Vertex[Point, Boolean]): Boolean = {
 			vertex.data.get.x == 0 && vertex.data.get.y == 0
 		}
 

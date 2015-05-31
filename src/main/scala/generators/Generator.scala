@@ -1,12 +1,12 @@
 package generators
 
 import graph.Graph
-import maze.{Boundary, Visitable}
+import maze.Visitable
 
-abstract class Generator[A <: Visitable] {
+abstract class Generator[A <: Visitable, B] {
 
-	def generate(): Graph[A, Boundary]
+	def generate(): Graph[A, B]
 
-	def render(graph: Graph[A, Boundary]): Unit
+	def render(graph: Graph[A, B]): Unit
 
 }

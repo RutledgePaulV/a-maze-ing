@@ -8,13 +8,14 @@ import scala.collection.mutable
 
 class ShapePanel(rows: Int, columns: Int) extends JPanel {
 
-	private val deltaX = getPreferredSize.width / columns.toDouble
-	private val deltaY = getPreferredSize.height / rows.toDouble
+	val deltaX = getPreferredSize.width / columns.toDouble
+	val deltaY = getPreferredSize.height / rows.toDouble
 	private val shapes = mutable.Set[Shape]()
 
-	override def getPreferredSize: Dimension = {
-		return new Dimension(500, 500)
-	}
+	override def getMinimumSize: Dimension = getPreferredSize
+	override def getMaximumSize: Dimension = getPreferredSize
+	override def getPreferredSize: Dimension = new Dimension(500, 500)
+
 
 	def getRatioAdjustedX(x: Int): Double = {
 		return x * deltaX
@@ -28,15 +29,14 @@ class ShapePanel(rows: Int, columns: Int) extends JPanel {
 		return new Point2D.Double(getRatioAdjustedX(x), getRatioAdjustedY(y))
 	}
 
-	def draw(s: Shape): Unit = {
-		shapes += s
+	def draw(s: Shape*): Unit = {
+		shapes ++= s
 		this.repaint()
 	}
 
 	override def paintComponent(g: Graphics) = {
 		super.paintComponent(g)
 		val g2 = g.asInstanceOf[Graphics2D]
-
 		g2.setColor(Color.BLACK)
 		g2.setStroke(new BasicStroke(2))
 		shapes.foreach(line => g2.draw(line))

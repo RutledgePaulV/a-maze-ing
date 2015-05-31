@@ -124,7 +124,7 @@ case class Vertex[A, B](var data: Option[A],
 
 	def edges = graph.getEdges(this)
 
-	def neighbors = graph.edges.map(_.other(this))
+	def neighbors = graph.getEdges(this).map(_.other(this))
 
 }
 

@@ -1,7 +1,25 @@
 package maze
 
-trait Visitable {var visited: Boolean = false}
-case class Boundary(isOuterEdge: Boolean = false)
+import graph.Vertex
 
-case class Point(x: Int, y: Int) extends Visitable
-case class Point3d(x: Int, y: Int, z:Int) extends Visitable
+trait Visitable {
+	var visited: Boolean = false
+}
+
+
+case class Point(x: Int, y: Int) extends Visitable {
+	def left(vertex: Vertex[Point, Boolean], border: Int): Boolean =
+		x == border || vertex.neighbors.exists(v => v.data.get.x < x)
+
+	def right(vertex: Vertex[Point, Boolean], border: Int): Boolean =
+		x == border || vertex.neighbors.exists(v => v.data.get.x > x)
+
+	def top(vertex: Vertex[Point, Boolean], border: Int): Boolean =
+		y == border || vertex.neighbors.exists(v => v.data.get.y < y)
+
+	def bottom(vertex: Vertex[Point, Boolean], border: Int): Boolean =
+		y == border || vertex.neighbors.exists(v => v.data.get.y > y)
+}
+
+
+case class Point3d(x: Int, y: Int, z: Int) extends Visitable

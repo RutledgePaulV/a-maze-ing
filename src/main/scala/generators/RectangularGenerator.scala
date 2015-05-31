@@ -1,16 +1,16 @@
 package generators
 
-import java.awt.geom.Line2D
+import java.awt.geom.{Line2D, Point2D}
 import javax.swing.SwingUtilities
 
 import graph.{Graph, Vertex}
 import graphics.{ShapePanel, Window}
-import maze.{Boundary, Point}
+import maze.Point
 
-class RectangularGenerator(width: Int = 20, height: Int = 20) extends Generator[Point] {
+class RectangularGenerator(width: Int = 20, height: Int = 20) extends Generator[Point, Boolean] {
 
-	type RectangularGraph = Graph[Point, Boundary]
-	type Grid = Array[Array[Vertex[Point, Boundary]]]
+	type RectangularGraph = Graph[Point, Boolean]
+	type Grid = Array[Array[Vertex[Point, Boolean]]]
 
 	override def generate(): RectangularGraph = {
 		val graph = new RectangularGraph
@@ -31,40 +31,53 @@ class RectangularGenerator(width: Int = 20, height: Int = 20) extends Generator[
 
 		for (row <- 0 until height) {
 			for (col <- 0 until width - 1) {
-				if (row == 0 || row == height - 1) {
-					graph.edge(grid(col)(row), grid(col + 1)(row), Boundary(true))
-				} else {
-					graph.edge(grid(col)(row), grid(col + 1)(row), Boundary(false))
-				}
+				graph.edge(grid(col)(row), grid(col + 1)(row), true)
 			}
 		}
 
 		for (col <- 0 until width) {
 			for (row <- 0 until height - 1) {
-				if (col == 0 || col == width - 1) {
-					graph.edge(grid(col)(row), grid(col)(row + 1), Boundary(true))
-				} else {
-					graph.edge(grid(col)(row), grid(col)(row + 1), Boundary(false))
-				}
+				graph.edge(grid(col)(row), grid(col)(row + 1), true)
 			}
 		}
 
 	}
 
 
+	def drawPoint(panel: ShapePanel, vertex: Vertex[Point, Boolean]): Unit = {
+		val point = vertex.data.get
+		val upperLeft = panel.getRatioAdjustedPoint(point.x, point.y)
+		val dy = panel.deltaY * 0.5
+		val dx = panel.deltaX * 0.5
+
+		val topLeft = new Point2D.Double(upperLeft.getX, upperLeft.getY)
+		val topRight = new Point2D.Double(upperLeft.getX + 2 * dx, upperLeft.getY)
+		val bottomRight = new Point2D.Double(upperLeft.getX + 2 * dx, upperLeft.getY + 2 * dy)
+		val bottomLeft = new Point2D.Double(upperLeft.getX, upperLeft.getY + 2 * dy)
+
+		if (point.left(vertex, 0)) {
+			panel.draw(new Line2D.Double(topLeft, bottomLeft))
+		}
+
+		if (point.top(vertex, 0)) {
+			panel.draw(new Line2D.Double(topLeft, topRight))
+		}
+
+		if (point.right(vertex, width)) {
+			panel.draw(new Line2D.Double(topRight, bottomRight))
+		}
+
+		if (point.bottom(vertex, height)) {
+			panel.draw(new Line2D.Double(bottomRight, bottomLeft))
+		}
+	}
+
+
 	override def render(graph: RectangularGraph): Unit = {
 
-		val panel = new ShapePanel(10, 10)
+		val panel = new ShapePanel(width, height)
 
-		graph.edges.foreach(edge => {
-			val p1 = edge.node1.data.get
-			val p2 = edge.node2.data.get
-			val point1 = panel.getRatioAdjustedPoint(p1.x, p1.y)
-			val point2 = panel.getRatioAdjustedPoint(p2.x, p2.y)
-			val line = new Line2D.Double(point1, point2)
-			println("drawing", line)
-			panel.draw(line)
-		})
+		graph.vertices.foreach(drawPoint(panel, _))
 
 		SwingUtilities.invokeLater(new Runnable {
 			override def run(): Unit = {
