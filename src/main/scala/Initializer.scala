@@ -27,7 +27,7 @@ object Initializer extends App {
 	 * Renders as ascii art.
 	 */
 	def rectangular(): Unit = {
-		val generator = new RectangularGenerator(100, 100)
+		val generator = new RectangularGenerator(10, 10)
 
 		val mazeGraph: Graph[Point, Boundary] = generator.generate()
 

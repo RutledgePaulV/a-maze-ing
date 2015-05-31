@@ -1,6 +1,10 @@
 package generators
 
+import java.awt.geom.Line2D
+import javax.swing.SwingUtilities
+
 import graph.{Graph, Vertex}
+import graphics.{ShapePanel, Window}
 import maze.{Boundary, Point}
 
 class RectangularGenerator(width: Int = 20, height: Int = 20) extends Generator[Point] {
@@ -48,29 +52,27 @@ class RectangularGenerator(width: Int = 20, height: Int = 20) extends Generator[
 	}
 
 
-	def gridFromGraph(graph: RectangularGraph): Grid = {
-		val grid: Grid = Array.ofDim(width, height)
-		graph.vertices.foreach(v => grid(v.data.get.x)(v.data.get.y) = v)
-		return grid
-	}
-
 	override def render(graph: RectangularGraph): Unit = {
-		val grid = gridFromGraph(graph)
 
-		for (row <- 0 until height) {
-			for (col <- 0 until width) {
+		val panel = new ShapePanel(10, 10)
 
+		graph.edges.foreach(edge => {
+			val p1 = edge.node1.data.get
+			val p2 = edge.node2.data.get
+			val point1 = panel.getRatioAdjustedPoint(p1.x, p1.y)
+			val point2 = panel.getRatioAdjustedPoint(p2.x, p2.y)
+			val line = new Line2D.Double(point1, point2)
+			println("drawing", line)
+			panel.draw(line)
+		})
+
+		SwingUtilities.invokeLater(new Runnable {
+			override def run(): Unit = {
+				val w = new Window(panel)
+				w.repaint()
 			}
-		}
+		})
 
-	}
-
-	def edgeToRight(graph: RectangularGraph, grid: Grid, x: Int, y: Int): Boolean = {
-		return graph.edgesBetween(grid(x)(y), grid(x + 1)(y)).nonEmpty
-	}
-
-	def edgeBelow(graph: RectangularGraph, grid: Grid, x: Int, y: Int): Boolean = {
-		return graph.edgesBetween(grid(x)(y), grid(x)(y + 1)).nonEmpty
 	}
 
 }
