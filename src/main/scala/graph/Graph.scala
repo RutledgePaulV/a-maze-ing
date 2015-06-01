@@ -68,20 +68,30 @@ class Graph[A, B] {
 }
 
 
-case class Edge[A, B](node1: Vertex[A, B], node2: Vertex[A, B], var data: Option[B], implicit protected val graph: Graph[A, B]) {
-	def other(vertex: Vertex[A, B]): Vertex[A, B] = if (vertex == node1) node2 else node1
+case class Edge[A, B](node1: Vertex[A, B], node2: Vertex[A, B], var data: Option[B], private val graph: Graph[A, B]) {
+
+	def other(vertex: Vertex[A, B]): Vertex[A, B] = {
+		if(vertex == node1) return node2
+		else if(vertex == node2) return node1
+		else throw new IllegalArgumentException("Other can only be fetched for one of the two nodes the edge connects.")
+	}
 
 	def remove() = graph.removeEdge(this)
+
 }
 
 
-case class Vertex[A, B](var data: Option[A], implicit protected val graph: Graph[A, B]) {
+case class Vertex[A, B](var data: Option[A], private val graph: Graph[A, B]) {
+
 	val label = graph.nextLabel()
 
 	def edges = graph.getEdges(this)
 
+	def order = graph.getEdges(this).size
+
 	def neighbors = graph.getEdges(this).map(_.other(this))
 
 	def remove() = graph.removeVertex(this)
+
 }
 

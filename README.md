@@ -24,3 +24,8 @@ the maze. I'll probably even animate the traversals.
 
 ## Basic (rectangular)
 ![Image of rectangular at 10000 nodes](https://lh3.googleusercontent.com/E01TYIOy6URW2JFlppDKDnf75SKl1uqCvJgvYHuiv2w=w970-h951-no)
+
+## Intermediate (multilevel)
+![Floor 1 of 3](https://lh3.googleusercontent.com/kfX5J2a7bWSmI0dj9KYDfNG-_ZlLcM3-KfOTc1I-TpU=w911-h907-no)
+![Floor 2 of 3](https://lh3.googleusercontent.com/z7k_44r1s7uqysEpCF2WnCIMqAdBispqPe9-oG-PFOQ=w911-h907-no)
+![Floor 3 of 3](https://lh3.googleusercontent.com/DDD_zLjdyvSEtvxbuGRYZ7ahnBgTUcam5DODGoUV2SA=w904-h907-no)

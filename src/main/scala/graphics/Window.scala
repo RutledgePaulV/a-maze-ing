@@ -4,7 +4,7 @@ import java.awt.GridBagLayout
 import javax.swing.border.EmptyBorder
 import javax.swing.{JFrame, JPanel}
 
-class Window(panel: ShapePanel) extends JFrame {
+class Window(panel: JPanel) extends JFrame {
 
 	val box = new JPanel(new GridBagLayout)
 	panel.setBorder(new EmptyBorder(20, 20, 20, 20))
