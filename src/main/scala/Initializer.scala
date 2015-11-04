@@ -14,16 +14,13 @@ object Initializer extends App {
 		arguments.foreach {
 			case "rectangular" => rectangular()
 			case "rectangular3d" => rectangular3d()
-			case _ => print("You must select one or more options from: rectangular, circular, or spherical.")
+			case _ => print("You must select from rectangular or rectangular3d.")
 		}
 	}
 
 
 	/**
-	 * The simplest of the three, this just creates rectangular grid as a graph.
-	 * The left, top, right, and bottom are considered outer walls and therefore are left intact.
-	 *
-	 * Renders as ascii art.
+	 * The simplest of the two, this just creates a standard rectangular maze.
 	 */
 	def rectangular(): Unit = {
 
@@ -42,7 +39,8 @@ object Initializer extends App {
 
 
 	/**
-	 *
+	 * Slightly more complex, this generates a multi-floor maze. Stairways between floors are
+	 * represented as circles.
 	 */
 	def rectangular3d(): Unit = {
 		val generator = new Rectangular3dGenerator(10, 10, 3)
