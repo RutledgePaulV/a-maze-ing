@@ -16,12 +16,6 @@ me to track edges in a reasonably efficient way without a lot of boilerplate cod
 reference the graph instance to which they're assigned you can have some nice convenient methods on the vertices
 and edges themselves (something which is sorely lacking in some popular graph databases).
 
-
-## What's next?
-Once I get things working and rendering I'll probably set about writing a couple different maze solvers to traverse
-the maze. I'll probably even animate the traversals.
-
-
 ## Basic (rectangular)
 ![Image of rectangular at 10000 nodes](https://lh3.googleusercontent.com/E01TYIOy6URW2JFlppDKDnf75SKl1uqCvJgvYHuiv2w=w970-h951-no)
 
